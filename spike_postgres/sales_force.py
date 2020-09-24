@@ -1,4 +1,17 @@
+from simple_salesforce import Salesforce
 import requests
+
+
+##############################################################################################################################
+sf = Salesforce(
+username='myemail@example.com',
+password='password',
+security_token='token')
+
+sf_data = sf.query_all("SELECT Owner.Name, store_id__c, account_number__c, username__c, password__c, program_status__c, FROM Account WHERE program_status__c IN ('Live','Test')")
+
+##############################################################################################################################
+
 
 # Consumer Key
 client_id = 'CONSUMER_KEY_FROM_SFDC'
@@ -10,10 +23,8 @@ redirect_uri = 'http://localhost/'
 sfdc_user = 'YOUR_SFDC_USERNAME'
 # sfdc_pass = your SFDC password
 sfdc_pass = 'YOUR_SFDC_PASSWORD'
-
 # Visit https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_oauth_endpoints.htm
 auth_url = 'https://login.salesforce.com/services/oauth2/token'
-
 # POST request for access token
 response = requests.post(auth_url, data = {
                     'client_id':client_id,
@@ -22,17 +33,16 @@ response = requests.post(auth_url, data = {
                     'username':sfdc_user,
                     'password':sfdc_pass
                     })
-
 # Retrieve token
 json_res = response.json()
 access_token = json_res['access_token']
 auth = {'Authorization':'Bearer ' + access_token}
-
 # In some cases, instance_url may be different from your base URL, so it's best to extract it from response.json()
 instance_url = json_res['instance_url']
-
 # GET requests
 url = instance_url + '/services/data/v45.0/sobjects/contact/describe'
 res = requests.get(url, headers=auth)
 r = res.json()
 print(r)
+
+##############################################################################################################################
